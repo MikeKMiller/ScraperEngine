@@ -1,0 +1,42 @@
+#!/bin/bash
+set -x
+action=$1
+shift
+
+_run() {
+  service nginx start
+  _set_env
+  echo $PYTHONPATH
+  #/app/slyd/bin/slyd -p 9002 -r /app/scrapeconfig_ui/dist &
+  #/app/scrapeconfig_server/manage.py runserver
+  #service ssh start &
+  /usr/bin/mongod --config /etc/mongodb.conf --smallfiles  &
+  python -m splash.server >/app/splash_utils/splash.out 2>&1 &
+  #/app/slyd/bin/slyd -p 9002 -r /app/scrapeconfig_ui/dist > /app/slyd/slyd.out 2>&1 &
+  /app/slyd/do_slyd_start.sh &
+  /usr/local/bin/scrapyd > /app/scrapyd/scrapyd.out 2>&1 &
+  celery worker -A scrapeconfig_dashboard -B -l info > /app/scrapeconfig_server/schedule.out 2>&1 &
+  /app/scrapeconfig_server/manage.py runserver > /app/scrapeconfig_server/scrapeconfig_server.out 2>&1
+
+}
+
+_set_env() {
+  path='/app/scrapeconfig_server:/app/slyd:/app/slybot'
+  export PYTHONPATH="$path"
+}
+
+if [ -z "$action" ]; then
+  _run
+else
+  case $action in
+    start-dev|start-prod)
+      _run
+      ;;
+    start-webshell)
+      _run_webshell "$@"
+      ;;
+    *)
+      exec $action "$@"
+      ;;
+  esac
+fi
