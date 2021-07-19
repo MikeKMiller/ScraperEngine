@@ -1,8 +1,8 @@
 # Slyd requirements
-twisted==16.1.1
+twisted>=20.3.0
 service_identity==16.0.0
-requests==2.9.1
-autobahn==0.16.0
+requests>=2.20.0
+autobahn>=20.12.3
 six==1.10.0
 chardet==2.3.0
 parse==1.6.6
