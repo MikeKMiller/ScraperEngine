@@ -12,6 +12,6 @@ requests==2.20.0
 toposort==1.5
 whitenoise==3.2.3
 scrapeconfig2code==0.0.12
-celery==3.1.20
+celery==5.2.2
 pymongo==3.5.1
 mongoengine==0.11.0
